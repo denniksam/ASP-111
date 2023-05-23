@@ -1,0 +1,109 @@
+﻿@using ASP_111.Services
+@inject DateService dateService
+@inject TimeService timeService
+@inject DateTimeService dateTimeService
+@{
+    ViewData["Title"] = "Services";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Службы и зависимости</h1>
+</div>
+
+<p>
+    SOLID - набор рекомендаций по архитектурной композиции проекта.
+    <b>D</b> (DIP) - принцип инверсии зависимостей
+</p>
+<p>
+    Службы (в ООП) - объекты глобального типа, доступные из различных
+    частей проекта. В отличие от глобальных переменных службы имеють различные
+    области существования (Scope)<br/>
+    <b>Singleton</b> - максимальное время существования, различные объекты
+    получают ссылку на один и тот же объект службы.<br />
+    <b>Scoped</b> (RequestScoped) - время существование в течение обработки
+    запроса (как у конструкторов). С новым запросом создается новый объект.<br />
+    <b>Transient</b> - каждое обращение к службе создает новый объект,
+    в разных точках инъекции объекты всегда разные
+</p>
+<p>
+    Работа со службами состоит из нескольких этапов
+</p>
+<ul>
+    <li>Традиционно, службы (классы служб) помещаются в отдельную папку</li>
+    <li>Описываются классы служб, их методы</li>
+    <li>Классы регистрируются в контейнере служб (в Program.cs 
+        между <code>var builder =...</code> и <code>var app = builder.Build();</code>
+    </li>
+    <li>Службы "запрашиваются" в других объектах, чаще всего - в контроллерах.
+        По умолчанию в первом контролле подключается служба логирования, можно
+        использовать ее как пример
+    </li>
+    <li>
+        Также службы могут инъектироваться в представления, Razor имеет для
+        этого инструкцию &commat;inject
+    </li>
+</ul>
+<p>
+    Как это работает:
+    Program.cs выполняется один раз при старте сервера (запуске приложения).
+    В этот момент происходит регистрация всех служб (но объекты пока не создаются).
+    Контроллеры пересоздаются каждый раз при новом запросе, при создании
+    происходит запрос на объект службы и в этот момент он будет создаваться /
+    либо использоваться ранее созданный объект службы.
+</p>
+<p>
+    Для контроля новых/старых объектов можно использовать их хеш-коды.
+</p>
+<table>
+    <thead>
+        <tr>
+            <th>Объект</th>
+            <th>Хеш-код (в контроллере)</th>
+            <th>Хеш-код (в представлении)</th>
+            <th>Комментарий</th>
+        </tr>        
+    </thead>
+    <tbody>
+        <tr>
+            <td>HomeController</td>
+            <td>@ViewData["ctrl-hash"]</td>
+            <td>---</td>
+            <td>Изменяется при обновлении страницы</td>
+        </tr>
+        <tr>
+            <td>DateService</td>
+            <td>@ViewData["date-hash"]</td>
+            <td>@dateService.GetHashCode()</td>
+            <td>Singleton - не изменяется при обновлениях, только при перезапуске</td>
+        </tr>
+        <tr>
+            <td>TimeService</td>
+            <td>@ViewData["time-hash"]</td>
+            <td>@timeService.GetHashCode()</td>
+            <td>Scoped - изменяется при обновлениях, но одинаковый во всех местах</td>
+        </tr>
+        <tr>
+            <td>DateTimeService</td>
+            <td>@ViewData["datetime-hash"]</td>
+            <td>@dateTimeService.GetHashCode()</td>
+            <td>Transient - изменяется во всех местах и при обновлении</td>
+        </tr>
+    </tbody>
+</table>
+
+<p> Данные от службы DateService: <b>@ViewData["date"]</b> </p>
+<p> Данные от службы TimeService: <b>@ViewData["time"]</b> </p>
+<p> Данные от службы DateTimeService: <b>@ViewData["datetime"]</b> </p>
+Д.З. Разработать службу валидации:
+на вход подается строка, результат - bool.
+В службе два метода: bool ValidateNonEmpty(String) и ValidateLogin
+ValidateNonEmpty - проверяет что строка не null, не "",
+   не состоит только из пробелов (* пробельных символов)
+ValidateLogin - содержит только символы, допустимые в именах переменных
+
+ViewData["res"] = new bool[] {
+    _validatorService.ValidateLogin("NormalLogin1"),
+    _validatorService.ValidateLogin("Normal_Login_2"),
+    _validatorService.ValidateLogin("In-valid login"),
+    _validatorService.ValidateLogin("$ invalid ++"),
+}

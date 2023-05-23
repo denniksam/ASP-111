@@ -1,7 +1,14 @@
+using ASP_111.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+// "будут спрашивать DateService - выдать объект"
+builder.Services.AddSingleton<DateService>();
+builder.Services.AddScoped<TimeService>();
+builder.Services.AddTransient<DateTimeService>();
 
 var app = builder.Build();
 
