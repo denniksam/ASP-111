@@ -8,15 +8,15 @@ namespace ASP_111.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        // декларируем зависимость
-        private readonly DateService _dateService;
+        // декларируем зависимости
+        private readonly IDateService _dateService;
         private readonly TimeService _timeService;
         private readonly DateTimeService _dateTimeService;
 
         // признак readonly говорит о том, что данные должны инициализироваться конструктором
         public HomeController(                // параметр в конструкторе требует передачи ссылки,
             ILogger<HomeController> logger,   // иначе объект контроллера не может быть построен
-            DateService dateService,          // - это является зависимостью
+            IDateService dateService,         // - это является зависимостью
             TimeService timeService,
             DateTimeService dateTimeService)
         {
@@ -52,6 +52,10 @@ namespace ASP_111.Controllers
             ViewData["date-hash"] = _dateService.GetHashCode();
             ViewData["ctrl-hash"] = this.GetHashCode();
 
+            return View();
+        }
+        public ViewResult Data()
+        {
             return View();
         }
 

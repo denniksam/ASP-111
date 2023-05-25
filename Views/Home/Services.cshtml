@@ -1,5 +1,5 @@
 ﻿@using ASP_111.Services
-@inject DateService dateService
+@inject IDateService dateService
 @inject TimeService timeService
 @inject DateTimeService dateTimeService
 @{
@@ -12,7 +12,9 @@
 
 <p>
     SOLID - набор рекомендаций по архитектурной композиции проекта.
-    <b>D</b> (DIP) - принцип инверсии зависимостей
+    <b>D</b> (DIP) - принцип инверсии зависимостей. Принцип рекомендует
+    не создавать зависимости от реализаций, а использовать для этого
+    абстракции - интерфейсы.
 </p>
 <p>
     Службы (в ООП) - объекты глобального типа, доступные из различных
