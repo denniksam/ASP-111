@@ -1,4 +1,7 @@
-﻿@{
+﻿@* заявляем только тип модели, реально переданный объект будет доступен
+под именем Model / @Model  *@
+@model ASP_111.Models.User.SignUpViewModel
+@{
     ViewData["Title"] = "SignUp";
 }
 
@@ -6,29 +9,51 @@
     <h1 class="display-4">Регистрация нового пользователя</h1>
 </div>
 
+@( Model.FormModel == null ? "Первый вход" : "Данные переданы" )
 
 <div class="row">
     <div class="col col-8">
         <form asp-action="SignUp" enctype="multipart/form-data" method="post">
 
+            @{
+                string validClass = Model.FormModel == null ? ""
+                    : Model.LoginMessage == null ? "is-valid" : "is-invalid";
+            }
             <label for="user-login" class="form-label">Логін</label>
             <div class="input-group mb-3">
                 <span class="input-group-text py-0 px-2"
                       id="user-login-addon"><i class="bi-person fs-bi"></i></span>
-                <input type="text" class="form-control"
+                <input type="text" class="form-control @validClass"
                        id="user-login" name="user-login"
                        placeholder="Виберіть логін"
+                       value="@Model.FormModel?.Login"
                        aria-describedby="user-login-addon">
+                @if (Model.LoginMessage != null)
+                {
+                    <div class="invalid-feedback">
+                        @Model.LoginMessage
+                    </div>
+                }                
             </div>
 
+            @{
+                validClass = Model.FormModel == null ? ""
+                : Model.PasswordMessage == null ? "is-valid" : "is-invalid";
+            }
             <label for="user-password" class="form-label">Пароль</label>
             <div class="input-group mb-3">
                 <span class="input-group-text py-0 px-2"
                       id="user-password-addon"><i class="bi-lock fs-bi"></i></span>
-                <input type="password" class="form-control"
+                <input type="password" class="form-control @validClass"
                        id="user-password" name="user-password"
                        placeholder="Виберіть пароль"
                        aria-describedby="user-password-addon">
+                @if (Model.PasswordMessage != null)
+                {
+                    <div class="invalid-feedback">
+                        @Model.PasswordMessage
+                    </div>
+                }
             </div>
 
             <label for="user-repeat" class="form-label">Підтвердіть пароль</label>
