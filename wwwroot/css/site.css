@@ -16,3 +16,7 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+.f-large {
+    font-size: 1.75em;
+}
