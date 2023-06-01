@@ -1,5 +1,7 @@
 ﻿using ASP_111.Data;
 using ASP_111.Models.User;
+using ASP_111.Services.Hash;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.RegularExpressions;
 
@@ -8,10 +10,12 @@ namespace ASP_111.Controllers
     public class UserController : Controller
     {
         private readonly DataContext _dataContext;
+        private readonly IHashService _hashService;
 
-        public UserController(DataContext dataContext)
+        public UserController(DataContext dataContext, IHashService hashService)
         {
             _dataContext = dataContext;
+            _hashService = hashService;
         }
 
         public IActionResult Index()
@@ -19,7 +23,7 @@ namespace ASP_111.Controllers
             return View();
         }
 
-        public ViewResult SignUp(SignUpFormModel? formModel)
+        public IActionResult SignUp(SignUpFormModel? formModel)
         {
             SignUpViewModel viewModel;
             if(Request.Method == "POST" && formModel != null)
@@ -27,20 +31,50 @@ namespace ASP_111.Controllers
                 // передача формы
                 viewModel = ValidateSignUpForm(formModel);
                 viewModel.FormModel = formModel;
+                // сохранить данные, необходимые для View, в сессии и redirect
+                HttpContext.Session.SetString("FormData",
+                    System.Text.Json.JsonSerializer.Serialize(viewModel));
+                return RedirectToAction(nameof(SignUp));
             }
             else
             {
-                // первый заход - начало заполнения формы
-                viewModel = new();
-                viewModel.FormModel = null;  // нечего проверять
+                // проверить есть ли сохраненные данные, если есть - использовать
+                //  и удалить
+                if (HttpContext.Session.Keys.Contains("FormData"))
+                {
+                    String? data = HttpContext.Session.GetString("FormData");
+                    if(data != null)
+                    {
+                        viewModel = System.Text.Json.JsonSerializer
+                            .Deserialize<SignUpViewModel>(data)!;
+                    }
+                    else
+                    {
+                        viewModel = null!;
+                    }
+                    HttpContext.Session.Remove("FormData");
+                }
+                else
+                {
+                    // первый заход - начало заполнения формы
+                    viewModel = new();
+                    viewModel.FormModel = null;  // нечего проверять
+                }
             }
             return View(viewModel);  // передаем модель в представление
         }
+        /* Закончить валидацию данных формы
+         * Реализовать поведение, при котором успешная валидация и создание
+         * пользователя приведут к выводу сообщения об успешной регистрации
+         * и очистят все поля формы (и рез-ты валидации)
+         */
 
         private SignUpViewModel ValidateSignUpForm(SignUpFormModel formModel)
         {
             SignUpViewModel viewModel = new();
-            if(String.IsNullOrEmpty(formModel.Login)) 
+
+            #region Login Validation
+            if (String.IsNullOrEmpty(formModel.Login)) 
             {
                 viewModel.LoginMessage = "Логин не может быть пустым";
             }
@@ -56,7 +90,9 @@ namespace ASP_111.Controllers
             {
                 viewModel.LoginMessage = null;  // все проверки логина пройдены
             }
-
+            #endregion
+            
+            #region Password validation
             if (String.IsNullOrEmpty(formModel.Password))
             {
                 viewModel.PasswordMessage = "Пароль не может быть пустым";
@@ -73,9 +109,11 @@ namespace ASP_111.Controllers
             {
                 viewModel.PasswordMessage = null;  // все проверки пароля пройдены
             }
+            #endregion
 
             // сохранение файла
-            if(formModel.Avatar != null)  // файл передан
+            String nameAvatar = null!;
+            if (formModel.Avatar != null)  // файл передан
             {
                 /* При приема файла важно:
                  * - проверить допустимые расширения (тип)
@@ -94,11 +132,30 @@ namespace ASP_111.Controllers
                 // проверить расширение на перечень допустимых
 
                 // формируем имя для файла
-                String name = Guid.NewGuid().ToString() + ext;
+                nameAvatar = Guid.NewGuid().ToString() + ext;
 
                 formModel.Avatar.CopyTo(
-                    new FileStream("wwwroot/avatars/" + name, FileMode.Create));
+                    new FileStream("wwwroot/avatars/" + nameAvatar, FileMode.Create));
             }
+
+            if(viewModel.LoginMessage == null 
+                && viewModel.PasswordMessage == null
+                && viewModel.AvatarMessage == null)
+            {
+                // Все проверки пройдены успешно - добавляем пользователя в БД
+                _dataContext.Users.Add(new()
+                {
+                    Id = Guid.NewGuid(),
+                    Login = formModel.Login,
+                    PasswordHash = _hashService.GetHash(formModel.Password),
+                    Email = formModel.Email!,
+                    CreatedDt = DateTime.Now,
+                    Name = formModel.RealName!,
+                    Avatar = nameAvatar
+                });
+                _dataContext.SaveChanges();
+            }
+
             return viewModel;
         }
     }

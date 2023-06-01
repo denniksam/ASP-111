@@ -1,5 +1,6 @@
 using ASP_111.Data;
 using ASP_111.Services;
+using ASP_111.Services.Hash;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
 using MySqlConnector;
@@ -14,9 +15,20 @@ builder.Services.AddControllersWithViews();
 // builder.Services.AddSingleton<DateService>();
 // "будут спрашивать IDateService - выдать объект DateService"
 builder.Services.AddSingleton<IDateService, DateService>();
-
 builder.Services.AddScoped<TimeService>();
 builder.Services.AddTransient<DateTimeService>();
+
+builder.Services.AddSingleton<IHashService, Md5HashService>();
+
+builder.Services.AddDistributedMemoryCache();
+
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromSeconds(300);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
+
 
 // контекст данных
 String? connectionString =   // берем из конфигурации строку подключения
@@ -54,6 +66,8 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseAuthorization();
+
+app.UseSession();
 
 app.MapControllerRoute(
     name: "default",
