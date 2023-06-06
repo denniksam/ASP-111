@@ -90,6 +90,16 @@ namespace ASP_111.Controllers
             return RedirectToAction(nameof(Sessions));
         }
 
+        public ViewResult Middleware()
+        {
+            ViewData["marker"] = 
+                HttpContext.Items.ContainsKey("marker")
+                ? HttpContext.Items["marker"]
+                : "Нет маркера";
+
+            return View();
+        }
+
         public IActionResult Privacy()
         {
             return View();

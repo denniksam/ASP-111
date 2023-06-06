@@ -1,4 +1,5 @@
 using ASP_111.Data;
+using ASP_111.Middleware;
 using ASP_111.Services;
 using ASP_111.Services.Hash;
 using Microsoft.EntityFrameworkCore;
@@ -64,6 +65,8 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+
+app.UseMarker();
 
 app.UseAuthorization();
 
