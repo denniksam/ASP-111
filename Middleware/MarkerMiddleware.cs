@@ -1,21 +1,26 @@
-﻿namespace ASP_111.Middleware
+﻿using ASP_111.Data;
+
+namespace ASP_111.Middleware
 {
     public class MarkerMiddleware
     {
         private readonly RequestDelegate _next;
-
+        private static int _cnt;
         public MarkerMiddleware(RequestDelegate next)
         {
             _next = next;
+            _cnt = 0;
             /* Похожее на инъекцию внедрение, но это не служба, а "связка"
              * цепочки Middleware путем передачи в каждый из классов ссылки
              * на следующий элемент цепочки.
              */
         }
 
-        public async Task InvokeAsync(HttpContext context)
+        public async Task InvokeAsync(HttpContext context, DataContext dataContext)
         {
-            context.Items.Add("marker", "TheMarker");
+            context.Items.Add("marker", 
+                $"TheMarker, {dataContext.Users.Count()} users, {++_cnt} requests");
+            
             await _next(context);
         }
 
@@ -28,6 +33,11 @@
          *    await _next(context);   /   _next(context);
          * Все, что выполняется ДО этого вызова - "прямой ход",
          *   ПОСЛЕ - "обратный ход"
+         */
+
+        /* Д.З. На базе Middleware реализовать подсчет запросов, пришедших
+         * разными методами (GET, POST). На странице Middleware отобразить
+         * состояние счетчиков.
          */
     }
 
