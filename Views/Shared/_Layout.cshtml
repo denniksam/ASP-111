@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿@using System.Security.Claims
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -28,6 +29,23 @@
                         </li>
                     </ul>
                 </div>
+                @if (Context.User.Identity?.IsAuthenticated == true)
+                {
+                    String avatar = Context.User
+                                    .Claims
+                                    .First(c => c.Type == ClaimTypes.UserData)
+                                    .Value;
+                    if(avatar == "")
+                    {
+                        avatar = "no-photo.png";
+                    }
+                    <img src="/avatars/@avatar" alt="Avatar" class="rounded-circle" />
+                }
+                else
+                {
+                    <!-- Button trigger modal -->
+                    <i class="bi bi-person-down f-large mx-3" role="button" data-bs-toggle="modal" data-bs-target="#authModal"></i>
+                }
                 <a asp-controller="User" asp-action="SignUp"><i class="bi bi-person-add f-large"></i></a>
             </div>
         </nav>
@@ -43,6 +61,43 @@
             &copy; 2023 - ASP-111 - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
+    
+    <!-- Modal -->
+    <div class="modal fade" id="authModal" tabindex="-1" aria-labelledby="authModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="authModalLabel">Автентифікація</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <label for="auth-login" class="form-label">Логін</label>
+                    <div class="input-group mb-3">
+                        <span class="input-group-text py-0 px-2"
+                              id="auth-login-addon"><i class="bi-person fs-bi"></i></span>
+                        <input type="text" class="form-control"
+                               id="auth-login"
+                               placeholder="Введіть логін"
+                               aria-describedby="auth-login-addon">
+                    </div>
+                    <label for="auth-password" class="form-label">Пароль</label>
+                    <div class="input-group mb-3">
+                        <span class="input-group-text py-0 px-2"
+                              id="auth-password-addon"><i class="bi-lock fs-bi"></i></span>
+                        <input type="password" class="form-control"
+                               id="auth-password" name="auth-password"
+                               placeholder="Введіть пароль"
+                               aria-describedby="auth-password-addon">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрити</button>
+                    <button type="button" class="btn btn-primary" id="auth-button">Вхід</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>

@@ -23,6 +23,22 @@ namespace ASP_111.Controllers
             return View();
         }
 
+        [HttpPost]  // этот метод будет вызываться по AJAX при аутентификации
+        public JsonResult Auth([FromBody] AuthAjaxModel model)
+        {
+            var user = _dataContext.Users.FirstOrDefault(
+                u => u.Login == model.Login 
+                    && u.PasswordHash == _hashService.GetHash(model.Password)
+                );
+            // сохранение информации об аутентификации в сессии
+            if(user != null)
+            {
+                HttpContext.Session.SetString("userId", user.Id.ToString());
+            }
+            return Json(new { Success = (user != null) });
+        }
+
+
         public IActionResult SignUp(SignUpFormModel? formModel)
         {
             SignUpViewModel viewModel;

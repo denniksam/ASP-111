@@ -72,6 +72,8 @@ app.UseAuthorization();
 
 app.UseSession();
 
+app.UseAuthSession();  // наш Middleware использует сессии, поэтому включается после них
+
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
