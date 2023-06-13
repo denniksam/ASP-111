@@ -37,6 +37,9 @@ function authButtonClick() {
         )
         .then(r => r.json())   // ответ => извлечение тела как JSON Объекта
         .then(j => {           // результат извлечения тела
-            console.log(j);
+            // console.log(j);
+            if (j.success == true) {
+                location = location;
+            }
         });
 }

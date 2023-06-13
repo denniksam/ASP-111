@@ -18,6 +18,11 @@ namespace ASP_111.Controllers
             _hashService = hashService;
         }
 
+        public ViewResult Profile()
+        {
+            return View();
+        }
+
         public IActionResult Index()
         {
             return View();
@@ -38,6 +43,15 @@ namespace ASP_111.Controllers
             return Json(new { Success = (user != null) });
         }
 
+        public RedirectToActionResult Logout()
+        {
+            /* Выход из авторизированного режима всегда должен
+             * перенаправить на страницу, которая доступна без авторизации
+             * Чаще всего - на домашнюю страницу
+             */
+            HttpContext.Session.Remove("userId");
+            return RedirectToAction("Index", "Home");
+        }
 
         public IActionResult SignUp(SignUpFormModel? formModel)
         {
