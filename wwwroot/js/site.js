@@ -6,7 +6,35 @@
     else {
         console.error("Element not found: auth-button");
     }
+    // все "карандаши" - кнопки редактирования
+    for (let pencil of document.querySelectorAll("[data-edit]")) {
+        pencil.addEventListener('click', editProfileClick);
+    }
 });
+
+function editProfileClick(e) {
+    const p = e.target.closest('p');
+    const span = p.querySelector('span');
+    span.setAttribute('contenteditable', 'true');
+    span.onblur = editableBlur;
+    span.onkeydown = editableKeydown;
+    span.focus();
+}
+function editableBlur(e) {
+    e.target.removeAttribute('contenteditable');
+    console.log(e.target.innerText);
+}
+function editableKeydown(e) {
+    if (e.keyCode == 13) {  // Enter
+        e.preventDefault();
+        e.target.blur();
+    }
+    // console.log(e);
+}
+/* Д.З. Реализовать метод контроллера User для приема изменных данных
+о почте пользователя, в нем внести принятые изменения в БД (и сохранить)
+В методе editableBlur передать данные на сервер.
+*/
 
 function authButtonClick() {
     const authLogin = document.getElementById("auth-login");
