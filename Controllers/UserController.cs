@@ -3,6 +3,7 @@ using ASP_111.Models.User;
 using ASP_111.Services.Hash;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using System.Text.RegularExpressions;
 
 namespace ASP_111.Controllers
@@ -20,7 +21,28 @@ namespace ASP_111.Controllers
 
         public ViewResult Profile()
         {
-            return View();
+            // находим ид пользователя из Claims
+            String? userId = HttpContext.User.Claims                                   
+                .FirstOrDefault(c => c.Type == ClaimTypes.Sid)?.Value;            
+
+            ProfileViewModel model = null!;
+            if(userId is not null)
+            {
+                // находим данные о пользователе по ид
+                var user = _dataContext.Users.Find(Guid.Parse(userId));
+                if (user != null)
+                {
+                    model = new()
+                    {
+                        Name = user.Name,
+                        Email = user.Email,
+                        Avatar = user.Avatar ?? "no-photo.png",
+                        CreatedDt = user.CreatedDt,
+                        Login = user.Login,
+                    };
+                }
+            }       
+            return View(model);
         }
 
         public IActionResult Index()
