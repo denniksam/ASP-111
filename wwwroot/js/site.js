@@ -23,6 +23,12 @@ function editProfileClick(e) {
 function editableBlur(e) {
     e.target.removeAttribute('contenteditable');
     console.log(e.target.innerText);
+    // TODO: если почта не изменилась, то не отсылать данные
+    fetch("/User/UpdateEmail?email=" + e.target.innerText, {
+        method: "POST"
+    }).then(r => r.json()).then(j => {
+        console.log(j);
+    });
 }
 function editableKeydown(e) {
     if (e.keyCode == 13) {  // Enter
@@ -31,10 +37,7 @@ function editableKeydown(e) {
     }
     // console.log(e);
 }
-/* Д.З. Реализовать метод контроллера User для приема изменных данных
-о почте пользователя, в нем внести принятые изменения в БД (и сохранить)
-В методе editableBlur передать данные на сервер.
-*/
+
 
 function authButtonClick() {
     const authLogin = document.getElementById("auth-login");

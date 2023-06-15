@@ -1,6 +1,7 @@
 using ASP_111.Data;
 using ASP_111.Middleware;
 using ASP_111.Services;
+using ASP_111.Services.Email;
 using ASP_111.Services.Hash;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
@@ -29,6 +30,8 @@ builder.Services.AddSession(options =>
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
 });
+
+builder.Services.AddSingleton<IEmailService, GmailService>();
 
 
 // контекст данных

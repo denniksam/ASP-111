@@ -32,6 +32,14 @@ else
                                                 <span class="p-1">@Model.Email</span> 
                                                 <i data-edit="email" class="bi bi-pencil mx-3" role="button"></i>
                                             </p>
+                                            @if ( ! Model.IsEmailConfirmed)
+                                            {
+                                                <b>Not confirmed</b>
+                                                <div class="row">
+                                                    <div class="col col-6"><input type="text" placeholder="enter code" /></div>
+                                                    <div class="col col-6"><button class="btn btn-secondary">Confirm</button></div>
+                                                </div>
+                                            }
                                         </div>
                                         <div class="col-6 mb-3">
                                             <h6>Registered</h6>
