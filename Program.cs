@@ -1,6 +1,7 @@
 using ASP_111.Data;
 using ASP_111.Middleware;
 using ASP_111.Services;
+using ASP_111.Services.AuthUser;
 using ASP_111.Services.Email;
 using ASP_111.Services.Hash;
 using Microsoft.EntityFrameworkCore;
@@ -32,6 +33,7 @@ builder.Services.AddSession(options =>
 });
 
 builder.Services.AddSingleton<IEmailService, GmailService>();
+builder.Services.AddScoped<IAuthUserService, ClaimsAuthUserService>();
 
 
 // контекст данных

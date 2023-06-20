@@ -1,0 +1,63 @@
+﻿@{
+    ViewData["Title"] = "Forum";
+}
+<div class="text-center">
+    <h1 class="display-4">Форум</h1>
+</div>
+<div class="row">
+    <div class="col col-7 offset-1">
+
+        <div class="card mb-3">
+            <div class="row g-0">
+                <div class="col-md-4">
+                    <img src="~/img/section/section0.png"
+                         class="img-fluid rounded-start" alt="section0">
+                </div>
+                <div class="col-md-8">
+                    <div class="card-body">
+                        <h5 class="card-title">Card title</h5>
+                        <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+                        <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+@if (Context.User.Identity?.IsAuthenticated == true)
+{
+    <form asp-action="AddSection" asp-controller="Forum" 
+          method="post" enctype="multipart/form-data">
+
+        <label for="section-title" class="form-label">Заголовок</label>
+        <div class="input-group mb-3">
+            <span class="input-group-text py-0 px-2"
+                  id="section-title-addon"><i class="bi bi-chat-quote"></i></span>
+            <input type="text" class="form-control"
+                    id="section-title" name="section-title"
+                    placeholder="Введіть назву розділу"
+                    aria-describedby="section-title-addon">
+        </div>
+
+        <label for="section-description" class="form-label">Опис</label>
+        <div class="input-group mb-3">
+            <span class="input-group-text"><i class="bi bi-book"></i></span>
+            <textarea class="form-control" aria-label="With textarea"
+                      id="section-description" name="section-description"
+                      placeholder="Введіть опис розділу"></textarea>
+        </div>
+
+        <label for="section-image" class="form-label">Аватарка</label>
+        <div class="input-group mb-3">
+            <span class="input-group-text py-0 px-2"
+                  id="section-image-addon"><i class="bi bi-card-image"></i></span>
+            <input type="file" class="form-control custom-file-input"
+                   id="section-image" name="section-image"
+                   aria-describedby="section-image-addon">
+        </div>
+
+        <button type="submit" class="btn btn-primary">Додати</button>
+    </form>
+}
