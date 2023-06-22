@@ -48,6 +48,30 @@ namespace ASP_111.Controllers
         }
     }
 }
-/* Д.З. Реализовать загрузку картинок, прикрепленных к форме
- * создания новых разделов форума, и сохранение имен их файлов в БД.
+/* Задача: валидация (сервис валидации)
+ * Задание: реализовать средства проверки моделей форм на правильность данных
+ * Особенности: разные поля нужно проверять по-разному, а в разных моделях
+ *  бывают одинаковые правила проверки.
+ * + Нужно формирование сообщений о результатах проверки 
+ * Готовые решения:
+ *  https://learn.microsoft.com/en-us/aspnet/core/mvc/models/validation
+ *  
+ * Идея:
+ * class Model {
+ *  ...
+ *  [ValidationRules(ValidationRule.NotEmpty, ValidationRule.Name)]
+ *  String name
+ *  
+ *  [ValidationRules(ValidationRule.NotEmpty, ValidationRule.Password)]
+ *  String password
+ *  
+ *  [ValidationRules(ValidationRule.Login)]
+ *  String login
+ *  
+ *  }
+ *  
+ *  _service.ErrorMessages(model) 
+ *    [ "name" => "Не может быть пустым", 
+ *      "password" => "должен содержать цифру",
+ *      "login" => null ]
  */
