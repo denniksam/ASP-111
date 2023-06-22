@@ -4,6 +4,7 @@ using ASP_111.Services;
 using ASP_111.Services.AuthUser;
 using ASP_111.Services.Email;
 using ASP_111.Services.Hash;
+using ASP_111.Services.Validation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
 using MySqlConnector;
@@ -33,6 +34,7 @@ builder.Services.AddSession(options =>
 });
 
 builder.Services.AddSingleton<IEmailService, GmailService>();
+builder.Services.AddSingleton<IValidationService, ValidationServiceV1>();
 builder.Services.AddScoped<IAuthUserService, ClaimsAuthUserService>();
 
 
