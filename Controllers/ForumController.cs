@@ -3,6 +3,7 @@ using ASP_111.Models.Forum.Index;
 using ASP_111.Services.AuthUser;
 using ASP_111.Services.Validation;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
 namespace ASP_111.Controllers
@@ -24,10 +25,34 @@ namespace ASP_111.Controllers
 
         public IActionResult Index()
         {
-            // проверяем есть ли в сессии сообщение о валидации формы,
-            // если есть, извлекаем, десериализуем и передаем на 
-            // представление (все сообщения)
-            return View();
+            int n = 0;
+            ForumIndexModel model = new()
+            {
+                Sections = _dataContext
+                    .Sections
+                    .Include(s => s.Author)
+                    .Where(s => s.DeleteDt == null)
+                    .OrderBy(s => s.CreateDt)
+                    .AsEnumerable()
+                    .Select(s => new ForumSectionViewModel
+                    {
+                        Id = s.Id.ToString(),
+                        Title = s.Title,
+                        Description = s.Description,
+                        CreateDt = s.CreateDt.ToShortDateString(),
+                        ImageUrl = s.ImageUrl == null
+                            ? $"/img/section/section{n++}.png"
+                            : $"/img/section/{s.ImageUrl}",
+                        Author = new(s.Author),
+                    }),
+                // проверяем есть ли в сессии сообщение о валидации формы,
+                // если есть, извлекаем, десериализуем и передаем на 
+                // представление (все сообщения) вместе с данными формы, которые
+                // подставятся обратно в поля формы
+            };
+
+
+            return View(model);
             // В представлении проверяем наличие данных валидации
             // если они есть, то в целом форма не принята,
             // выводим сообщения под каждым полем:

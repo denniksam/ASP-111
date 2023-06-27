@@ -27,6 +27,11 @@ namespace ASP_111.Data
                     nameof(Rate.ItemId),    // ключ по двум полям
                     nameof(Rate.UserId));   // 
 
+            // настройка связей и навигационных свойств
+            modelBuilder.Entity<Section>()
+                .HasOne(s => s.Author)
+                .WithMany()
+                .HasForeignKey(s => s.AuthorId);
         }
     }
 }
