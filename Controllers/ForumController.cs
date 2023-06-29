@@ -121,3 +121,17 @@ namespace ASP_111.Controllers
  *      "password" => "должен содержать цифру",
  *      "login" => null ]
  */
+/* o LINQ
+ * LINQ-to-SQL (LINQ-to-Entity)
+ *  - собирает информацию о запросе и строит его SQL выражение
+ *  _context.Users.Where(u => u.Name == 'Admin' )
+ *  ==> IQueryable ( "SELECT * FROM Users u WHERE u.Name = 'Admin'
+ *  
+ * LINQ-to-Objects
+ *  - циклическая (итеративная) обработка коллекций
+ *  collection.Users.Where(u => u.Name == 'Admin' )
+ *  ==> IEnumerable
+ *  
+ *  _context.Users.Where(u => u.Name == 'Admin' ).ToList()
+ *  _context.Users.ToList().Where(u => u.Name == 'Admin' )
+ */
