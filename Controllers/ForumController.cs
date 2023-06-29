@@ -1,10 +1,13 @@
 ﻿using ASP_111.Data;
 using ASP_111.Models.Forum.Index;
+using ASP_111.Models.Forum.Section;
 using ASP_111.Services.AuthUser;
 using ASP_111.Services.Validation;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
+using System.Text.Json;
 
 namespace ASP_111.Controllers
 {
@@ -21,6 +24,75 @@ namespace ASP_111.Controllers
             _logger = logger;
             _authUserService = authUserService;
             _validationService = validationService;
+        }
+
+        //                     <a  asp-route-id="@..." 
+        public ViewResult Section( [FromRoute] Guid id )
+        {
+            SectionViewModel sectionViewModel = new()
+            {
+                SectionId = id.ToString()
+            };
+            if (HttpContext.Session.Keys.Contains("AddTopicMessage"))
+            {
+                sectionViewModel.ErrorMessages =
+                    JsonSerializer.Deserialize<Dictionary<String, String?>>(
+                        HttpContext.Session.GetString("AddTopicMessage"));
+
+                HttpContext.Session.Remove("AddTopicMessage");
+            }
+            return View(sectionViewModel);
+        }
+
+        [HttpPost]
+        public RedirectToActionResult AddTopic(TopicFormModel formModel)
+        {
+            var messages = _validationService.ErrorMessages(formModel);
+            foreach (var (key, message) in messages)
+            {
+                if (message != null)  // есть сообщение об ошибке
+                {
+                    HttpContext.Session.SetString(
+                        "AddTopicMessage",
+                        JsonSerializer.Serialize(messages)
+                    );
+                    return RedirectToAction(nameof(Section), new { id = formModel.SectionId });
+                }
+            }
+            // проверяем что пользователь аутентифицирован
+            Guid? userId = _authUserService.GetUserId(HttpContext);
+            if (userId != null)
+            {
+                String? nameAvatar = null;
+                if (formModel.ImageFile != null)
+                {
+                    // определяем расширение файла
+                    String ext = Path.GetExtension(formModel.ImageFile.FileName);
+                    // проверить расширение на перечень допустимых
+
+                    // формируем имя для файла
+                    nameAvatar = Guid.NewGuid().ToString() + ext;
+
+                    using FileStream fstream = new(
+                        "wwwroot/img/" + nameAvatar, 
+                        FileMode.Create);
+
+                    formModel.ImageFile.CopyTo(fstream);
+                }
+
+                _dataContext.Topics.Add(new()
+                {
+                    Id = Guid.NewGuid(),
+                    AuthorId = userId.Value,
+                    SectionId = formModel.SectionId,
+                    Title = formModel.Title,
+                    Description = formModel.Description,
+                    CreateDt = DateTime.Now,
+                    ImageUrl = nameAvatar
+                });
+            }
+
+            return RedirectToAction(nameof(Section), new {id = formModel.SectionId});
         }
 
         public IActionResult Index()

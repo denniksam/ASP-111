@@ -1,0 +1,58 @@
+﻿@model ASP_111.Models.Forum.Section.SectionViewModel
+@{
+    ViewData["Title"] = "Section";
+}
+<div class="text-center">
+    <h1 class="display-4">Раздел</h1>
+</div>
+
+@ViewData["id"]
+
+
+@if (Context.User.Identity?.IsAuthenticated == true)
+{
+    if(Model.ErrorMessages != null)
+    {
+        <b>@Model.ErrorMessages["Title"]</b>
+    }
+    @* Д.З. Реализовать вывод сообщений о валидации полей формы добавления 
+        Топика форума под каждым из проверяемых полей, при этом обеспечить
+        сохранение ранее введенных данных во всех полях. Правильные поля
+        также отметить "зеленым"
+    *@
+
+    <form asp-action="AddTopic" asp-controller="Forum"
+          method="post" enctype="multipart/form-data">
+
+        <label for="topic-title" class="form-label">Заголовок</label>
+        <div class="input-group mb-3">
+            <span class="input-group-text py-0 px-2"
+                  id="topic-title-addon"><i class="bi bi-chat-quote"></i></span>
+            <input type="text" class="form-control"
+                   id="topic-title" name="topic-title"
+                   placeholder="Введіть назву підрозділу"
+                   aria-describedby="topic-title-addon">
+        </div>
+
+        <label for="topic-description" class="form-label">Опис</label>
+        <div class="input-group mb-3">
+            <span class="input-group-text"><i class="bi bi-book"></i></span>
+            <textarea class="form-control" aria-label="With textarea"
+                      id="topic-description" name="topic-description"
+                      placeholder="Введіть опис підрозділу"></textarea>
+        </div>
+
+        <label for="topic-image" class="form-label">Аватарка</label>
+        <div class="input-group mb-3">
+            <span class="input-group-text py-0 px-2"
+                  id="topic-image-addon"><i class="bi bi-card-image"></i></span>
+            <input type="file" class="form-control custom-file-input"
+                   id="topic-image" name="topic-image"
+                   aria-describedby="topic-image-addon">
+        </div>
+
+        <input type="hidden" name="section-id" value="@(Model.SectionId)"/>
+
+        <button type="submit" class="btn btn-primary">Додати</button>
+    </form>
+}
