@@ -29,7 +29,7 @@ namespace ASP_111.Controllers
         //                     <a  asp-route-id="@..." 
         public ViewResult Section( [FromRoute] Guid id )
         {
-            SectionViewModel sectionViewModel = new()
+            SectionPageModel sectionViewModel = new()
             {
                 SectionId = id.ToString()
             };
@@ -41,6 +41,22 @@ namespace ASP_111.Controllers
 
                 HttpContext.Session.Remove("AddTopicMessage");
             }
+
+            sectionViewModel.Topics =
+                _dataContext.Topics
+                .Where(t => t.DeleteDt == null)
+                .OrderByDescending(t => t.CreateDt)
+                .AsEnumerable()
+                .Select(t => new TopicViewModel()
+                {
+                    Id = t.Id.ToString(),
+                    Title = t.Title,
+                    Description = t.Description,
+                    CreateDt = t.CreateDt.ToShortDateString(),
+                    ImageUrl = "/img/" + t.ImageUrl,
+
+                }).ToList();
+
             return View(sectionViewModel);
         }
 
@@ -90,6 +106,7 @@ namespace ASP_111.Controllers
                     CreateDt = DateTime.Now,
                     ImageUrl = nameAvatar
                 });
+                _dataContext.SaveChanges();
             }
 
             return RedirectToAction(nameof(Section), new {id = formModel.SectionId});

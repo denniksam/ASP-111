@@ -1,4 +1,5 @@
-﻿@model ASP_111.Models.Forum.Section.SectionViewModel
+﻿@using ASP_111.Models.Forum.Section
+@model ASP_111.Models.Forum.Section.SectionPageModel
 @{
     ViewData["Title"] = "Section";
 }
@@ -6,7 +7,15 @@
     <h1 class="display-4">Раздел</h1>
 </div>
 
-@ViewData["id"]
+<div class="row row-cols-1 row-cols-md-3 g-4">
+    @if (Model.Topics != null)
+    {
+        @foreach (TopicViewModel topic in Model.Topics)
+        {
+            @Html.DisplayFor(m => topic, "TopicTemplate")
+        }
+    }
+</div>
 
 
 @if (Context.User.Identity?.IsAuthenticated == true)
@@ -15,11 +24,6 @@
     {
         <b>@Model.ErrorMessages["Title"]</b>
     }
-    @* Д.З. Реализовать вывод сообщений о валидации полей формы добавления 
-        Топика форума под каждым из проверяемых полей, при этом обеспечить
-        сохранение ранее введенных данных во всех полях. Правильные поля
-        также отметить "зеленым"
-    *@
 
     <form asp-action="AddTopic" asp-controller="Forum"
           method="post" enctype="multipart/form-data">
