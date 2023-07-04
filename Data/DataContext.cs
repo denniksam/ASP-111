@@ -32,6 +32,11 @@ namespace ASP_111.Data
                 .HasOne(s => s.Author)
                 .WithMany()
                 .HasForeignKey(s => s.AuthorId);
+
+            modelBuilder.Entity<Topic>()
+                .HasOne(t => t.Author)
+                .WithMany()
+                .HasForeignKey(t => t.AuthorId);
         }
     }
 }

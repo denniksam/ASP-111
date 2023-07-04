@@ -10,6 +10,6 @@ namespace ASP_111.Models.Forum.Section
         public String? Description { get; set; }
         public String? ImageUrl { get; set; }
         public String  CreateDt { get; set; } = null!;
-        public ProfileViewModel Author { get; set; } = null!;
+        public UserViewModel Author { get; set; } = null!;
     }
 }

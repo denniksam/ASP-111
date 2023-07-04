@@ -10,5 +10,8 @@
         public Guid      SectionId   { get; set; }
         public DateTime  CreateDt    { get; set; }
         public DateTime? DeleteDt    { get; set; }
+
+        // навигационные свойства
+        public User Author { get; set; }
     }
 }

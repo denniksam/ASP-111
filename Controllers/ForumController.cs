@@ -44,6 +44,7 @@ namespace ASP_111.Controllers
 
             sectionViewModel.Topics =
                 _dataContext.Topics
+                .Include(t => t.Author)
                 .Where(t => t.DeleteDt == null)
                 .OrderByDescending(t => t.CreateDt)
                 .AsEnumerable()
@@ -54,7 +55,7 @@ namespace ASP_111.Controllers
                     Description = t.Description,
                     CreateDt = t.CreateDt.ToShortDateString(),
                     ImageUrl = "/img/" + t.ImageUrl,
-
+                    Author = new(t.Author)
                 }).ToList();
 
             return View(sectionViewModel);
