@@ -27,12 +27,29 @@ namespace ASP_111.Controllers
         }
 
         //                     <a  asp-route-id="@..." 
-        public ViewResult Section( [FromRoute] Guid id )
+        public IActionResult Section( [FromRoute] Guid id )
         {
+            var section = _dataContext.Sections
+                .Include(s => s.Author)
+                .FirstOrDefault(s => s.Id == id );
+
+            if ( section == null )
+            {
+                Response.StatusCode = StatusCodes.Status404NotFound;
+                return NotFound();
+            }
             SectionPageModel sectionViewModel = new()
             {
-                SectionId = id.ToString()
+                Section = new ForumSectionViewModel
+                {
+                    Id = section.Id.ToString(),
+                    Title = section.Title,
+                    Description = section.Description,
+                    CreateDt = section.CreateDt.ToShortDateString(),
+                    Author = new(section.Author),
+                }
             };
+
             if (HttpContext.Session.Keys.Contains("AddTopicMessage"))
             {
                 sectionViewModel.ErrorMessages =

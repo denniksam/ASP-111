@@ -18,7 +18,7 @@
             Name = user.Name;
             Email = user.Email;
             Login = user.Login;
-            Avatar = user.Avatar ?? "no-photo.png";
+            Avatar = "/avatars/" + (user.Avatar ?? "no-photo.png");
             CreatedDt = user.CreatedDt.ToShortDateString();
         }
     }

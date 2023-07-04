@@ -4,7 +4,9 @@
     ViewData["Title"] = "Section";
 }
 <div class="text-center">
-    <h1 class="display-4">Раздел</h1>
+    <h1 class="display-4">@Model.Section.Title</h1>
+    <h3>@Model.Section.Description</h3>
+    <h5>By @Model.Section.Author.Name</h5>
 </div>
 
 <div class="row row-cols-1 row-cols-md-4 g-4">
@@ -55,7 +57,7 @@
                    aria-describedby="topic-image-addon">
         </div>
 
-        <input type="hidden" name="section-id" value="@(Model.SectionId)"/>
+        <input type="hidden" name="section-id" value="@(Model.Section.Id)"/>
 
         <button type="submit" class="btn btn-primary">Додати</button>
     </form>
