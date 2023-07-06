@@ -11,5 +11,19 @@ namespace ASP_111.Models.Forum.Section
         public String? ImageUrl { get; set; }
         public String  CreateDt { get; set; } = null!;
         public UserViewModel Author { get; set; } = null!;
+
+        public TopicViewModel()
+        {
+            
+        }
+        public TopicViewModel(Data.Entities.Topic topic)
+        {
+            Id = topic.Id.ToString();
+            Title = topic.Title;
+            Description = topic.Description;
+            ImageUrl = "/img/" + topic.ImageUrl;
+            CreateDt = topic.CreateDt.ToShortDateString();
+            Author = new(topic.Author);
+        }
     }
 }

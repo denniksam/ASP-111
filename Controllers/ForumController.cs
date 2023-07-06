@@ -29,7 +29,26 @@ namespace ASP_111.Controllers
 
         public IActionResult Topic([FromRoute] Guid id)
         {
-            TopicPageModel model = new();
+            var topic = _dataContext
+                .Topics
+                .Include(t => t.Author)
+                .FirstOrDefault(t => t.Id == id);
+
+            if (topic == null)
+            {
+                return NotFound();
+            }
+
+            TopicPageModel model = new()
+            {
+                Topic = new(topic)
+            };
+            model.Themes = _dataContext
+                .Themes
+                .Where(t => t.TopicId == topic.Id && t.DeleteDt == null)
+                .Select(t => new ThemeViewModel(t))
+                .ToList();
+
             if (HttpContext.Session.Keys.Contains("AddThemeMessage"))
             {
                 model.ErrorMessages =
@@ -38,6 +57,7 @@ namespace ASP_111.Controllers
 
                 HttpContext.Session.Remove("AddThemeMessage");
             }
+
             return View(model);
         }
 
@@ -79,11 +99,18 @@ namespace ASP_111.Controllers
                     ThemeId = themeId,
                     CreateDt = dt,
                 });
-                // _dataContext.SaveChanges();
+                _dataContext.SaveChanges();
             }
 
             return RedirectToAction(nameof(Topic), new { id = formModel.TopicId });
         }
+        /* Д.З. Отображение тем (страница Topic)
+         * Обеспечить возможность приложить файл к форме создания новой темы
+         * и использовать его для сущности комментария (первого в теме)
+         * Добавить навигационное свойство Author к сущности Theme, 
+         * настроить его связь и внедрить в выборку
+         */
+
 
         //                     <a  asp-route-id="@..." 
         public IActionResult Section( [FromRoute] Guid id )
