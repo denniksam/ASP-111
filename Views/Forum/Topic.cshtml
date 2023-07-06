@@ -1,0 +1,71 @@
+﻿@using ASP_111.Models.Forum.Topic
+@model TopicPageModel
+@{
+    ViewData["Title"] = "Topic";
+}
+<div class="text-center">
+    <h2 class="display-4">@Model.Topic.Title</h2>
+    <h5>@Model.Topic.Description</h5>
+    <h6>By @Model.Topic.Author.Name</h6>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="panel panel-default">
+                <div class="panel-body p-t-0">
+                    <div class="input-group">
+                        <input type="text" id="example-input1-group2" name="example-input1-group2" class="form-control" placeholder="Search">
+                        <span class="input-group-btn">
+                            <button type="button" class="btn btn-effect-ripple btn-primary"><i class="fa fa-search"></i></button>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+    @if (Model.Themes != null)
+    {
+        @foreach (ThemeViewModel theme in Model.Themes)
+        {
+            @Html.DisplayFor(m => theme, "ThemeTemplate")
+        }
+    }
+    </div>
+</div>
+
+
+@if (Context.User.Identity?.IsAuthenticated == true)
+{
+    if (Model.ErrorMessages != null)
+    {
+        <b>@Model.ErrorMessages["Title"]</b>
+    }
+
+    <form asp-action="AddTheme" asp-controller="Forum"
+          method="post" enctype="multipart/form-data">
+
+        <label for="topic-title" class="form-label">Заголовок</label>
+        <div class="input-group mb-3">
+            <span class="input-group-text py-0 px-2"
+                  id="topic-title-addon"><i class="bi bi-chat-quote"></i></span>
+            <input type="text" class="form-control"
+                   id="topic-title" name="Title"
+                   placeholder="Введіть назву теми"
+                   aria-describedby="topic-title-addon">
+        </div>
+
+        <label for="topic-description" class="form-label">Питання</label>
+        <div class="input-group mb-3">
+            <span class="input-group-text"><i class="bi bi-book"></i></span>
+            <textarea class="form-control" aria-label="With textarea"
+                      id="topic-description" name="Content"
+                      placeholder="Введіть питання"></textarea>
+        </div>
+
+        <input type="hidden" name="TopicId" value="@(Model.Topic.Id)" />
+
+        <button type="submit" class="btn btn-primary">Додати</button>
+    </form>
+}

@@ -1,6 +1,7 @@
 ﻿using ASP_111.Data;
 using ASP_111.Models.Forum.Index;
 using ASP_111.Models.Forum.Section;
+using ASP_111.Models.Forum.Topic;
 using ASP_111.Services.AuthUser;
 using ASP_111.Services.Validation;
 using Microsoft.AspNetCore.Http;
@@ -26,9 +27,81 @@ namespace ASP_111.Controllers
             _validationService = validationService;
         }
 
+        public IActionResult Topic([FromRoute] Guid id)
+        {
+            TopicPageModel model = new();
+            if (HttpContext.Session.Keys.Contains("AddThemeMessage"))
+            {
+                model.ErrorMessages =
+                    JsonSerializer.Deserialize<Dictionary<String, String?>>(
+                        HttpContext.Session.GetString("AddThemeMessage")!);
+
+                HttpContext.Session.Remove("AddThemeMessage");
+            }
+            return View(model);
+        }
+
+        [HttpPost]
+        public RedirectToActionResult AddTheme(ThemeFormModel formModel)
+        {
+            var messages = _validationService.ErrorMessages(formModel);
+            foreach (var (key, message) in messages)
+            {
+                if (message != null)  // есть сообщение об ошибке
+                {
+                    HttpContext.Session.SetString(
+                        "AddThemeMessage",
+                        JsonSerializer.Serialize(messages)
+                    );
+                    return RedirectToAction(nameof(Topic), new { id = formModel.TopicId });
+                }
+            }
+            // проверяем что пользователь аутентифицирован
+            Guid? userId = _authUserService.GetUserId(HttpContext);
+            if (userId != null)
+            {
+                Guid themeId = Guid.NewGuid();
+                DateTime dt = DateTime.Now;
+
+                _dataContext.Themes.Add(new()
+                {
+                    Id = themeId,
+                    AuthorId = userId.Value,
+                    TopicId = formModel.TopicId,
+                    Title = formModel.Title,
+                    CreateDt = dt,
+                });
+                _dataContext.Comments.Add(new()
+                {
+                    Id = Guid.NewGuid(),
+                    AuthorId = userId.Value,
+                    Content = formModel.Content,
+                    ThemeId = themeId,
+                    CreateDt = dt,
+                });
+                // _dataContext.SaveChanges();
+            }
+
+            return RedirectToAction(nameof(Topic), new { id = formModel.TopicId });
+        }
+
         //                     <a  asp-route-id="@..." 
         public IActionResult Section( [FromRoute] Guid id )
         {
+            /* Д.З. Работа с карточками Топиков.
+             * Создать алгоритм формирования строки из даты-времени по следующим
+             * правилам:
+             *  - если дата сегодняшняя, то выводится только время (до секунд)
+             *  - если вчерашняя, то слово "вчера" и время до минут
+             *  - если меньше чем 10 дней назад (2-9), то надпись "N дней назад"
+             *  - иначе просто дата 11.08.2010
+             * Реализовать в виде службы (сервиса) и внедрить в проект,
+             * испытать на карточках форума
+             * 
+             * Добавить ссылку на профиль пользователя к его аватарке на
+             * карточке с Топиком. (Нажатие на автарку переводит в профиль
+             * автора топика)
+             */
             var section = _dataContext.Sections
                 .Include(s => s.Author)
                 .FirstOrDefault(s => s.Id == id );
