@@ -6,7 +6,7 @@
         public String Title { get; set; } = null!;
         public String CreatedDt { get; set; } = null!;
         public UserViewModel Author { get; set; } = null!;
-        public String FirstCommentText { get; set; } = null!;
+        public String? FirstCommentText { get; set; } = null!;
 
         public ThemeViewModel()
         {
@@ -17,7 +17,7 @@
             Id = theme.Id.ToString();
             Title = theme.Title;
             CreatedDt = theme.CreateDt.ToShortDateString();
-            FirstCommentText = theme.Comments.OrderBy(c => c.CreateDt).First().Content;
+            FirstCommentText = theme.Comments?.OrderBy(c => c.CreateDt).First().Content;
             Author = new(theme.Author);
         }
     }

@@ -10,12 +10,18 @@
                 <div class="card-body">
                     <h5 class="card-title">@Model.Title</h5>
                     <p class="card-text" 
-                    style="white-space: nowrap; overflow: hidden;text-overflow: ellipsis;">@Model.FirstCommentText</p>
+                       style="white-space: nowrap; overflow: hidden;text-overflow: ellipsis;"
+                       >@Model.FirstCommentText</p>
                     <p class="card-text"><small class="text-muted">Створено: @Model.CreatedDt</small></p>
                 </div>
             </div>
             <div class="card-footer">
-                This is a wider card with supporting text
+                <div class="d-flex align-items-center" style="gap:1em">
+                    <i class="bi bi-hand-thumbs-up"></i> 234
+                    <i class="bi bi-hand-thumbs-down"></i> 45
+                    <a class="btn btn-outline-secondary ms-auto"
+                       asp-controller="Forum" asp-action="Theme" asp-route-id="@(Model.Id)"><i class="bi bi-arrow-right-square"></i></a>
+                </div>
             </div>
         </div>
     </div>

@@ -1,6 +1,7 @@
 ﻿using ASP_111.Data;
 using ASP_111.Models.Forum.Index;
 using ASP_111.Models.Forum.Section;
+using ASP_111.Models.Forum.Theme;
 using ASP_111.Models.Forum.Topic;
 using ASP_111.Services.AuthUser;
 using ASP_111.Services.Validation;
@@ -25,6 +26,74 @@ namespace ASP_111.Controllers
             _logger = logger;
             _authUserService = authUserService;
             _validationService = validationService;
+        }
+
+        public IActionResult Theme([FromRoute] Guid id)
+        {
+            var theme = _dataContext
+                .Themes
+                .Include(t => t.Author)
+                .Where(t => t.DeleteDt == null && t.Id == id)
+                .FirstOrDefault();
+
+            if(theme == null)
+            {
+                return NotFound();
+            }
+
+            ThemePageModel pageModel = new()
+            {
+                Theme = new(theme),
+                Comments = _dataContext
+                    .Comments
+                    .Include(c => c.Author)
+                    .OrderBy(c => c.CreateDt)
+                    .Where(c => c.DeleteDt == null && c.ThemeId == id)
+                    .Select(c => new CommentViewModel(c))
+                    .ToList()
+            };
+
+            return View(pageModel);
+        }
+        /* Д.З. Форум. Комментарии.
+         * Реализовать валидацию данных формы добавления комментария, 
+         * вывода сообщений о результатах валидации.
+         * В случае ошибок валидации подставить в поля предыдущие значения,
+         * в случае приема данных, наоборот, очистить форму (* вывести
+         *  сообщение "добавлено успешно")
+         */
+
+        [HttpPost]
+        public RedirectToActionResult AddComment([FromForm] CommentFormModel formModel)
+        {
+            var messages = _validationService.ErrorMessages(formModel);
+            foreach (var (key, message) in messages)
+            {
+                if (message != null)  // есть сообщение об ошибке
+                {
+                    HttpContext.Session.SetString(
+                        "AddCommentMessage",
+                        JsonSerializer.Serialize(messages)
+                    );
+                    return RedirectToAction(nameof(Theme), new { id = formModel.ThemeId });
+                }
+            }
+            // проверяем что пользователь аутентифицирован
+            Guid? userId = _authUserService.GetUserId(HttpContext);
+            if (userId != null)
+            {
+                _dataContext.Comments.Add(new()
+                {
+                    Id = Guid.NewGuid(),
+                    AuthorId = userId.Value,
+                    Content = formModel.Content,
+                    ThemeId = formModel.ThemeId,
+                    CreateDt = DateTime.Now,
+                });
+                _dataContext.SaveChanges();
+            }
+
+            return RedirectToAction(nameof(Theme), new { id = formModel.ThemeId });
         }
 
         public IActionResult Topic([FromRoute] Guid id)
