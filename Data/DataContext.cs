@@ -37,6 +37,21 @@ namespace ASP_111.Data
                 .HasOne(t => t.Author)
                 .WithMany()
                 .HasForeignKey(t => t.AuthorId);
+
+            modelBuilder.Entity<Theme>()
+                .HasOne(t => t.Author)
+                .WithMany()
+                .HasForeignKey(t => t.AuthorId);
+            modelBuilder.Entity<Theme>()
+                .HasMany(t => t.Comments)
+                .WithOne(c => c.Theme)
+                .HasForeignKey(c => c.ThemeId);
+
+            modelBuilder.Entity<Comment>()
+                .HasOne(e => e.Author)
+                .WithMany()
+                .HasForeignKey(e => e.AuthorId);
+
         }
     }
 }

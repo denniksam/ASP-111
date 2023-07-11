@@ -10,5 +10,9 @@
         public String?   ImageUrl { get; set; }
         public DateTime  CreateDt { get; set; }
         public DateTime? DeleteDt { get; set; }
+
+        // Navigation props
+        public User Author { get; set; } = null!;
+        public Theme Theme { get; set; } = null!;
     }
 }

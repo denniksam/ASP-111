@@ -4,12 +4,13 @@
     <div class="card m-3" >
         <div class="row g-0">
             <div class="col-md-3">
-                <img src="https://bootdey.com/img/Content/user_1.jpg" class="img-fluid rounded-start m-auto w-100" alt="Author">
+                <img src="@Model.Author.Avatar" class="img-fluid rounded-start m-auto w-100" alt="Author">
             </div>
             <div class="col-md-9">
                 <div class="card-body">
                     <h5 class="card-title">@Model.Title</h5>
-                    <p class="card-text" style="white-space: nowrap; overflow: hidden;text-overflow: ellipsis;">This is a wider card with supporting text below as a natural lead-in to additional content. </p>
+                    <p class="card-text" 
+                    style="white-space: nowrap; overflow: hidden;text-overflow: ellipsis;">@Model.FirstCommentText</p>
                     <p class="card-text"><small class="text-muted">Створено: @Model.CreatedDt</small></p>
                 </div>
             </div>

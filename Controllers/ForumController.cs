@@ -45,6 +45,8 @@ namespace ASP_111.Controllers
             };
             model.Themes = _dataContext
                 .Themes
+                .Include(t => t.Author)
+                .Include(t => t.Comments)
                 .Where(t => t.TopicId == topic.Id && t.DeleteDt == null)
                 .Select(t => new ThemeViewModel(t))
                 .ToList();

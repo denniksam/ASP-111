@@ -8,5 +8,9 @@
         public Guid      TopicId  { get; set; }
         public DateTime  CreateDt { get; set; }
         public DateTime? DeleteDt { get; set; }
+
+        // Navigation props
+        public User Author { get; set; } = null!;
+        public List<Comment> Comments { get; set; } = null!;
     }
 }
