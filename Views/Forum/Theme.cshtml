@@ -9,7 +9,7 @@
 
 @foreach(var comment in Model.Comments)
 {
-    <p>@comment.Content</p>
+    @Html.DisplayFor(m => comment, "CommentTemplate")
 }
 
 @if (Context.User.Identity?.IsAuthenticated == true)

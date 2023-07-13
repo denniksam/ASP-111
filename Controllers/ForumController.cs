@@ -1,4 +1,5 @@
 ﻿using ASP_111.Data;
+using ASP_111.Models;
 using ASP_111.Models.Forum.Index;
 using ASP_111.Models.Forum.Section;
 using ASP_111.Models.Forum.Theme;
@@ -52,7 +53,12 @@ namespace ASP_111.Controllers
                     .Select(c => new CommentViewModel(c))
                     .ToList()
             };
-
+            Guid? authUserId = _authUserService.GetUserId(HttpContext);
+            if(authUserId != null)
+            {
+                ViewData["authUser"] = new UserViewModel(
+                    _dataContext.Users.Find(authUserId.Value)!);
+            }
             return View(pageModel);
         }
         /* Д.З. Форум. Комментарии.

@@ -5,6 +5,7 @@
         public String Id { get; set; } = null!;
         public String Content { get; set; } = null!;
         public String CreateDt { get; set; } = null!;
+        public UserViewModel Author { get; set; } = null!;
 
         public CommentViewModel()
         {             
@@ -15,6 +16,7 @@
             Id = comment.Id.ToString();
             Content = comment.Content;
             CreateDt = comment.CreateDt.ToShortDateString();
+            Author = new(comment.Author);
         }
     }
 }
