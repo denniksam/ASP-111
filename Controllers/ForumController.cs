@@ -92,9 +92,10 @@ namespace ASP_111.Controllers
                 {
                     Id = Guid.NewGuid(),
                     AuthorId = userId.Value,
-                    Content = formModel.Content,
-                    ThemeId = formModel.ThemeId,
+                    Content  = formModel.Content,
+                    ThemeId  = formModel.ThemeId,
                     CreateDt = DateTime.Now,
+                    ReplyId  = formModel.ReplyId,
                 });
                 _dataContext.SaveChanges();
             }

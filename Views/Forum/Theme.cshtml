@@ -22,7 +22,7 @@
     <form asp-action="AddComment" asp-controller="Forum"
           method="post" enctype="multipart/form-data">
 
-        <label for="comment-content" class="form-label">Питання</label>
+        <label for="comment-content" class="form-label">Відповідь</label>
         <div class="input-group mb-3">
             <span class="input-group-text"><i class="bi bi-book"></i></span>
             <textarea class="form-control" aria-label="With textarea"
@@ -31,7 +31,24 @@
         </div>
 
         <input type="hidden" name="ThemeId" value="@(Model.Theme.Id)" />
+        <input type="hidden" name="ReplyId" value="" />
 
         <button type="submit" class="btn btn-primary">Додати</button>
     </form>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // пройтись по всем кнопкам Reply и добавить им обработчики
+            for( let replyButton of document.querySelectorAll('[data-reply]') ) {
+                replyButton.addEventListener('click', replyClick) ;
+            }
+        });
+
+        function replyClick(e) {
+            const replyId = e.target.closest('button').getAttribute('data-reply');
+            console.log(replyId);
+            const hiddenInput = document.querySelector('input[name="ReplyId"]');
+            hiddenInput.value = replyId;
+        }
+    </script>
 }
